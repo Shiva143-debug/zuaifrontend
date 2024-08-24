@@ -5,6 +5,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PostForm = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    
     const post = location.state?.post || {};
     const queryParams = new URLSearchParams(location.search);
     const name = queryParams.get('name') || location.state?.name || "";
@@ -13,8 +16,6 @@ const PostForm = () => {
     const [content, setContent] = useState(post.content || '');
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(!!post.id);
-    const location = useLocation();
-    const navigate = useNavigate();
 
     useEffect(() => {
         setIsEditing(!!post.id);

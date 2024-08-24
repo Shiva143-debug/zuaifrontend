@@ -9,12 +9,14 @@ import './styles.css';
 import Footer from './Footer';
 
 const PostList = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate();
-    const location = useLocation();
     const name = localStorage.getItem('userName') || '';
     console.log(name)
 
