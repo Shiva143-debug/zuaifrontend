@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import CommentSection from './CommentSection';
 
 const PostDetail = () => {
     const { id } = useParams();
@@ -42,10 +43,11 @@ const PostDetail = () => {
     }
 
     return (
-        <div className="post-details" style={{ overflowY: "auto" }}>
+        <div className="post-details" >
             <h2 className="post-title">{post.title}</h2>
             <p className="post-content">{post.content}</p>
-            <p className="post-author">Written by {post.author || 'Unknown'}</p>
+            <p className="post-author">Written by {post.name || 'Unknown'}</p>
+            <CommentSection postId={post.id} />
         </div>
     );
 };

@@ -1,52 +1,66 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PostForm = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const post = location.state?.post || {};
+    const queryParams = new URLSearchParams(location.search);
+    const name = queryParams.get('name') || location.state?.name || "";
+
+    const [title, setTitle] = useState(post.title || '');
+    const [content, setContent] = useState(post.content || '');
     const [error, setError] = useState(null);
+    const [isEditing, setIsEditing] = useState(!!post.id);
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setIsEditing(!!post.id);
+    }, [post]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!title) {
-            setError('Title Feild is required');
+            setError('Title field is required');
             return;
         }
         if (!content) {
-            setError('Content Feild is required');
+            setError('Content field is required');
             return;
         }
 
         try {
-            await axios.post('https://honorable-prism-verse.glitch.me/posts', { title, content });
-            setTitle('');
-            setContent('');
-            setError(null);
-            alert('Post created successfully!');
+            console.log(name)
+            if (isEditing) {
+                await axios.put(`https://honorable-prism-verse.glitch.me/posts/${post.id}`, { name, title, content });
+                alert('Post updated successfully!');
+            } else {
+                await axios.post('https://honorable-prism-verse.glitch.me/posts', { name, title, content });
+                alert('Post created successfully!');
+            }
+            navigate('/');
         } catch (error) {
-            setError('Error creating post');
+            setError('Error submitting post');
         }
     };
 
-
     return (
-
         <form className="post-form" onSubmit={handleSubmit}>
-            <h2 className="post-form-title">Create a New Post</h2>
+            <h2 className="post-form-title">{isEditing ? 'Edit Post' : 'Create a New Post'}</h2>
             <div className="post-form-group">
-                <label className="post-form-label">Title</label>
-                <input onChange={(e) => setTitle(e.target.value)} type="text" className="post-form-input form-control" name="title" />
+                <label className="post-form-label">Title:</label>
+                <input onChange={(e) => setTitle(e.target.value)} type="text" className="post-form-input form-control" name="title" value={title} />
             </div>
             <div className="post-form-group">
-                <label className="post-form-label">Content</label>
-                <textarea onChange={(e) => setContent(e.target.value)} className="post-form-textarea form-control" name="content" ></textarea>
+                <label className="post-form-label">Content:</label>
+                <textarea onChange={(e) => setContent(e.target.value)} className="post-form-textarea form-control" name="content" value={content}></textarea>
             </div>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <button type="submit" className="post-form-button">Submit</button>
         </form>
-
     );
 };
 
