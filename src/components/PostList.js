@@ -12,7 +12,7 @@ const PostList = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    
+
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -42,8 +42,9 @@ const PostList = () => {
             alert("blog deleted successfully")
             await fetchPosts();
         } catch (error) {
-            setError('Error fetching posts');
-            alert("blog not deleted")
+            
+            alert("blog will not delete Because which was not created by you")
+            await fetchPosts();
         }
        
     }
