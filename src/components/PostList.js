@@ -43,7 +43,7 @@ const PostList = () => {
             await fetchPosts();
         } catch (error) {
             
-            alert("blog will not delete Because which was not created by you")
+            alert("If you want to delete this blog first you need to delete comments of this blog")
             await fetchPosts();
         }
        
@@ -60,6 +60,7 @@ const PostList = () => {
         setSearchQuery(e.target.value);
     };
 
+ 
     const filteredPosts = posts.filter(post =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -95,23 +96,31 @@ const PostList = () => {
                 </div>
                 
                 }
-                {!loading &&
 
-                    <div style={{ display: "flex", flexWrap: "wrap" }} className='mx-5'>
-
-                        {filteredPosts.map(post => (
-                            <div class="service-item d-flex flex-column  rounded">
-                                <h5 className="mb-3">{post.title}</h5>
-                                <p className="m-0">{post.content.substring(0, 60)}...</p>
-                                <a className="btn btn-square" href={`/posts/${post.id}`}><FontAwesomeIcon icon={faArrowRight} /></a>
-                                <div style={{display:"flex",justifyContent:"flex-end"}}>
-                                <BsPencilSquare onClick={() => onUpdate(post)} className='d-u-icon'/>
-                                <MdOutlineDeleteOutline onClick={() => onDelete(post.id)}  className='d-u-icon'/>
-                                </div>
+             {loading ? (
+                <div className="spinner-container">
+                    <div className="custom-spinner"></div>
+                </div>
+            ) : filteredPosts.length === 0 ? (
+                <div className="container text-center">
+                    <h1>No Blogs Yet</h1>
+                </div>
+            ) : (
+                <div style={{ display: "flex", flexWrap: "wrap" }} className='mx-5'>
+                    {filteredPosts.map(post => (
+                        <div className="service-item d-flex flex-column rounded" key={post.id}>
+                            <h5 className="mb-3">{post.title}</h5>
+                            <p className="m-0">{post.content.substring(0, 60)}...</p>
+                            <a className="btn btn-square" href={`/posts/${post.id}`}><FontAwesomeIcon icon={faArrowRight} /></a>
+                            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                <BsPencilSquare onClick={() => onUpdate(post)} className='d-u-icon' />
+                                <MdOutlineDeleteOutline onClick={() => onDelete(post.id)} className='d-u-icon' />
                             </div>
-                        ))}
-                    </div>
-            }
+                        </div>
+                    ))}
+                </div>
+            )}
+
                 <Footer />
         </>
     );
