@@ -1,6 +1,6 @@
 // CommentSection.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchComments, createComment, deleteComment } from '../api';
 import './styles.css';
 
 const CommentSection = ({ postId }) => {
@@ -10,11 +10,10 @@ const CommentSection = ({ postId }) => {
     const [error, setError] = useState(null);
     const [showComments, setShowComments] = useState(false)
 
-    const fetchComments = async () => {
+    const fetchAllComments = async () => {
         try {
-            const response = await axios.get(`https://honorable-prism-verse.glitch.me/posts/${postId}/comments`);
-            console.log(response.data)
-            setComments(response.data);
+            const data = await fetchComments(postId);
+            setComments(data);
             setLoading(false);
         } catch (error) {
             setError('Error fetching comments');
@@ -23,7 +22,7 @@ const CommentSection = ({ postId }) => {
     };
 
     useEffect(() => {
-        fetchComments();
+        fetchAllComments();
     }, [postId]);
 
     const handleCommentChange = (e) => {
@@ -33,20 +32,19 @@ const CommentSection = ({ postId }) => {
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`https://honorable-prism-verse.glitch.me/posts/${postId}/comments`, { comment: newComment });
+            await createComment({ postId: postId, text: newComment });
             setNewComment('');
-            await fetchComments();
+            await fetchAllComments();
         } catch (error) {
-            setError('Error adding comment');
+            setError('Error creating comment');
         }
     };
 
     const handleCommentDelete = async (commentId) => {
-        console.log(commentId)
         try {
-            await axios.delete(`https://honorable-prism-verse.glitch.me/posts/${postId}/comments/${commentId}`);
-            await fetchComments();
-            alert("comment Deleted")
+            await deleteComment(commentId);
+            await fetchAllComments();
+            alert("Comment Deleted")
         } catch (error) {
             setError('Error deleting comment');
         }
@@ -81,7 +79,7 @@ const CommentSection = ({ postId }) => {
                                     <>
                                         <li key={comm.id} className="d-flex justify-content-between align-items-center mb-2">
                                             <div>
-                                                <p style={{fontSize:"24px"}}>{comm.comment}</p>
+                                                <p style={{fontSize:"24px"}}>{comm.text}</p>
                                                 <small>{new Date(comm.created_at).toISOString().split('T')[0]}</small>
                                             </div>
                                             <button onClick={() => handleCommentDelete(comm.id)} className="btn btn-danger btn-sm">Delete</button>

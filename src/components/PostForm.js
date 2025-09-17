@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { updatePost, createPost } from '../api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const PostForm = () => {
@@ -36,10 +35,10 @@ const PostForm = () => {
         try {
             console.log(name)
             if (isEditing) {
-                await axios.put(`https://honorable-prism-verse.glitch.me/posts/${post.id}`, { name, title, content });
+                await updatePost(post.id, { name, title, content });
                 alert('Post updated successfully!');
             } else {
-                await axios.post('https://honorable-prism-verse.glitch.me/posts', { name, title, content });
+                await createPost({ name, title, content });
                 alert('Post created successfully!');
             }
             navigate('/');

@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { BsPencilSquare } from "react-icons/bs";
-import { useNavigate,useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { fetchPosts, deletePost } from '../api';
 import './styles.css';
 import Footer from './Footer';
 
@@ -20,38 +20,36 @@ const PostList = () => {
     const name = localStorage.getItem('userName') || '';
     console.log(name)
 
-    const fetchPosts = async () => {
-        try {
-            const response = await axios.get('https://honorable-prism-verse.glitch.me/posts');
-            setPosts(response.data);
-            setLoading(false);
-        } catch (error) {
-            setError('Error fetching posts');
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchPosts();
+        const getPosts = async () => {
+            try {
+                const data = await fetchPosts();
+                setPosts(data);
+                setLoading(false);
+            } catch (error) {
+                setError('Error fetching posts');
+                setLoading(false);
+            }
+        };
+
+        getPosts();
     }, []);
 
-    const onDelete=async(id)=>{
+    const onDelete = async (id) => {
         try {
-            const response = await axios.delete(`https://honorable-prism-verse.glitch.me/posts/${id}`);
-            console.log(response)
-            alert("blog deleted successfully")
-            await fetchPosts();
+            const response = await deletePost(id);
+            console.log(response);
+            alert("blog deleted successfully");
+            await fetchPosts().then(data => setPosts(data));
         } catch (error) {
-            
-            alert("If you want to delete this blog first you need to delete comments of this blog")
-            await fetchPosts();
+            alert("If you want to delete this blog first you need to delete comments of this blog");
+            await fetchPosts().then(data => setPosts(data));
         }
-       
     }
 
  
     const onUpdate = (post) => {
-        navigate('/new-post', { state: { post,name } }); 
+        navigate(`/new-post/${post.id}`, { state: { post, name } });
     };
 
     if (error) return <p>{error}</p>;
